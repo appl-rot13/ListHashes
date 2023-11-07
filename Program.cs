@@ -1,7 +1,6 @@
 ﻿
 var targetDirPath = AppContext.BaseDirectory;
 var outputFilePath = "HashList.txt";
-var hashAlgorithm = System.Security.Cryptography.SHA1.Create();
 
 var ret = Directory.EnumerateFiles(targetDirPath, "*", SearchOption.AllDirectories).AsParallel()
     .Select(filePath => (filePath, ToHexString(ComputeHash(filePath)))).OrderBy(t => t.filePath);
@@ -20,11 +19,9 @@ return;
 byte[] ComputeHash(string filePath)
 {
     using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+    using (var hashAlgorithm = System.Security.Cryptography.SHA1.Create())
     {
-        lock (hashAlgorithm)
-        {
-            return hashAlgorithm.ComputeHash(stream);
-        }
+        return hashAlgorithm.ComputeHash(stream);
     }
 }
 
